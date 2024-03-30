@@ -90,7 +90,7 @@ left_column, middle_column, right_column = st.columns(3)
 
 left_column.button('Press me!')
 
-middle_column.selectbox("Select your Gender",
+input = middle_column.selectbox("Select your Gender",
                         ("Male","Female","Other"))
 # Or even better, call Streamlit functions inside a "with" block:
 with right_column:
@@ -113,7 +113,45 @@ for i in range(100):
   # Update the progress bar with each iteration.
   latest_iteration.text(f'Progress {i+1}%')
   bar.progress(i + 1)
-  time.sleep(0.1)
+  time.sleep(0.01)
 
 '...and now we\'re done!'
 
+'''## Advanced Features of Streamlit'''
+''' ### Caching'''
+'''Caching allows your app to stay performant even when loading data from the web, manipulating large datasets, or performing expensive computations.
+
+The basic idea behind caching is to store the results of expensive function calls and return the cached result when the same inputs occur again. This avoids repeated execution of a function with the same input values.
+
+'''
+
+# We can use the decorators st.cache_data or st.cache_resource for this purpose.
+st.markdown('''
+- st.cache_data is the recommended way to cache computations that return data.
+- st.cache_resource is the recommended way to cache global resources like ML models or database connections.''')
+
+@st.cache_data
+def long_computation(input):
+   'Starting a long computation...'
+   latest_iteration = st.empty()
+   bar = st.progress(0)
+   for i in range(100):
+    # Update the progress bar with each iteration.
+    latest_iteration.text(f'Progress {i+1}%')
+    bar.progress(i + 1)
+    time.sleep(0.1)
+long_computation(input)
+'...and now we\'re done!'
+'''**We can now see that for the second progress bar in which we have used caching, the progress doesn't rerun if we use any other widgets or something.**'''
+
+'''## Session State'''
+''' Session State provides a dictionary-like interface where you can save information that is preserved between script reruns. Use **st.session_state** with key or attribute notation to store and recall values.'''
+'''#### Example'''
+
+if "counter" not in st.session_state:
+    st.session_state.counter = 0
+
+st.session_state.counter += 1
+
+st.write(f"#### This page has run {st.session_state.counter} times.")
+st.button("Run it again")
